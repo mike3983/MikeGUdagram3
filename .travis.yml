@@ -7,6 +7,7 @@ env:
   - DOCKER_COMPOSE_VERSION=1.28.5
 
 before_install:
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
   - docker -v && docker-compose -v
   - sudo rm /usr/local/bin/docker-compose
   - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
@@ -15,9 +16,5 @@ before_install:
 
 install:
   - docker-compose -f udagram-deployment/docker/docker-compose-build.yaml build --parallel 
+  - docker-compose -f udagram-deployment/docker/docker-compose-build.yaml push
 
-after_success:
-  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-  - docker push mike3983/udagram-api-feed
-  - docker push mike3983/udagram-api-users
-  - docker push mike3983/udagram-frontend
